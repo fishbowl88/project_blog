@@ -1,0 +1,60 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+
+    <h1>{{ post.title }}</h1>
+    {% if post.published_date %}
+
+        {{ post.published_date }}
+
+
+
+    {% else %}
+        <a class="btn btn-primary" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+
+    {% endif %}
+        <p>{{ post.text|safe|linebreaks }}</p>
+    {#   prevents modifications from the medium editor showing up as html tags     #}
+
+    {% if user.is_authenticated %}
+        <a class="btn btn-primary" href="{% url 'post_edit' pk=post.pk%}">Edit Post</a>
+        <a class="btn btn-primary" href="{% url 'post_remove' pk=post.pk%}">Remove Post</a>
+
+
+    {% endif %}
+
+    <hr>
+    <a class="btn btn-primary" href="{% url 'add_comment_to_post' pk=post.pk%}">Add Comment</a>
+
+    <div class="container">
+        {% for comment in post.comments.all %}
+            <br>
+            {% if user.is_authenticated or comment.approved_comment %}
+                {{ comment.create_date }}
+                {% if not comment.approve_comment %}
+                    <a class="btn btn-primary" href="{% url 'comment_remove' pk=comment.pk%}">Remove Comment</a>
+                    <a class="btn btn-primary" href="{% url 'comment_approve' pk=comment.pk%}">Approve Comment</a>
+                {% endif %}
+
+                <p>{{ comment.text|safe|linebreaks }}</p>
+                <p>Posted By: {{ comment.author }}</p>
+
+
+            {% endif %}
+        {% empty %}
+            <p>No Comments</p>
+        {% endfor %}
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+{% endblock %}
